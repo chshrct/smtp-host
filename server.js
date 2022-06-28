@@ -6,7 +6,7 @@ const express = require('express'),
     app = express(),
     port = process.env.PORT || 80
 
-
+app.use(express.json())
 app.use(cors())
 app.listen(port, function (req, res) {
     console.log('Server is running at port: ', port);
@@ -16,7 +16,8 @@ app.get('/', function (req, res) {
     res.send('ok')
 });
 
-app.get('/send-email', function (req, res) {
+app.post('/send-email', function (req, res) {
+    const { email, subject, name, text } = req.body
     let transporter = nodeMailer.createTransport({
         service: "gmail",
         auth: {
@@ -25,11 +26,12 @@ app.get('/send-email', function (req, res) {
         }
     })
     let mailOptions = {
-        from: req.body.from, // sender address
-        to: process.env.USER_EMAIL, // list of receivers
-        subject: req.body.subject, // Subject line
-        text: req.body.text, // plain text body
-        html: <h1>Gamarjoba</h1> // html body
+        from: 'Portfolio Mails',
+        to: process.env.USER_EMAIL,
+        subject: subject,
+        html: `<h1>Hello, I'm ${name}!</h1>
+        <h2>My email is: ${email}</h2>
+        <p>${text}</p>`
     };
 
     transporter.sendMail(mailOptions);
